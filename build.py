@@ -1,0 +1,198 @@
+"""Builds index.html for dermapert.net. Edit the data below, then run: python3 build.py"""
+import html, json
+
+E = html.escape
+UTM = 'utm_source=dermapert_net&utm_medium=referral&utm_campaign=hub'
+SHOP = 'https://dermawife.com/'
+def pd(no):
+    return f'{SHOP}product/detail.html?product_no={no}&{UTM}'
+
+REDFLAG = '진물, 미란, 노란 가피, 농포, 통증, 발열, 급속 악화, 심한 가려움이 있으면 화장품 선택보다 진료가 우선입니다.'
+
+PRODUCTS = [
+    ('Barrier Cream', 'MD 베리어 크림', '건조하고 거칠어진 피부에 보다 풍부한 장벽·보습 케어. 세라마이드·콜레스테롤·지방산 3:1:1 컨셉의 Derma311™ 장벽 프레임워크를 대표합니다.', pd(14)),
+    ('Taurine Cream', '베리어 인텐시브 타우린 크림', '얼굴 전체에 부담이 적은 가벼운 데일리 장벽·보습 케어. 유소아와 민감한 피부에서 상황별로 사용합니다.', pd(20)),
+    ('Calming Cream', 'MD 카밍 크림', '침·땀·세정 등으로 예민하게 느껴지는 피부를 편안하게 관리하는 컴포트 케어.', pd(28)),
+    ('Calming Water', 'MD 카밍 워터', '닦아내는 토너가 아니라, 문지르지 않고 눌러 주거나(press) 잠깐 적셔 두는(soak) 수분·컴포트 단계.', pd(27)),
+    ('Barrier Ointment Plus', '베리어 얼티메이트 Rx 오인트 플러스', '입가·마찰·건조로 갈라지기 쉬운 작은 부위에 선택적으로 쓰는 밀폐 보호막(occlusive protection).', pd(25)),
+    ('Barrier Stick', '베리어 스틱', '마찰과 건조가 반복되는 작은 부위에 휴대하며 쓰는 국소 보호 제품.', None),
+]
+
+FAQ = [
+    ('침독', [
+        ('아기 침독에는 무엇을 발라야 하나요?', '침독은 침 자체뿐 아니라 반복적인 젖음-건조, 음식물 잔류, 닦는 마찰이 함께 만드는 자극성 피부염(irritant dermatitis)의 성격이 강합니다. 먼저 침과 음식물을 문지르지 않고 부드럽게 제거하고 충분히 말린 뒤 피부 상황에 맞는 보호막을 고릅니다.',
+         '예민한 느낌에는 Calming Cream, 건조와 장벽 약화가 함께 있으면 Barrier Cream, 입가의 마찰·건조 부위에는 Barrier Ointment Plus를 선택적으로 사용할 수 있습니다.'),
+        ('아기 침독에 바셀린을 발라도 되나요?', '보호막 형성은 도움이 될 수 있지만 모든 단계에서 두꺼운 밀폐가 필요한 것은 아닙니다. 피부가 습하고 짓무른 상태인지, 건조하고 갈라지는 상태인지에 따라 제형을 달리해야 합니다.', None),
+        ('침독에는 크림과 연고 중 무엇이 좋나요?', '붉음과 습기가 중심이면 가벼운 크림을, 건조·갈라짐·마찰이 집중되는 작은 부위에는 연고형 보호막을 선택적으로 쓰는 것이 실용적입니다.', None),
+        ('침독이 심하면 언제 병원에 가야 하나요?', '진물, 미란, 노란 가피, 통증, 농포, 급속 악화, 반복되는 심한 가려움이 있으면 세균 감염이나 습진 등 다른 질환을 감별하기 위해 진료가 우선입니다.', None),
+        ('침독을 예방하려면?', '침을 오래 두지 않되 반복해서 문질러 닦지 않습니다. 부드럽게 눌러 제거하고 젖은 상태가 오래가지 않게 하며, 향료·강한 세정제·여러 제품의 중첩을 줄입니다.', None),
+        ('침을 자주 닦아주는 것이 좋은가요?', '침을 오래 두는 것도 문제지만 반복적으로 문질러 닦는 마찰도 피부장벽을 자극할 수 있습니다. 부드러운 천이나 거즈로 눌러 제거하는 방식이 낫습니다.', None),
+        ('침독에서 젖었다 마르기(wet-dry cycle)가 왜 문제인가요?', '젖고 마르는 과정이 반복되면 각질층의 수분과 지질 균형이 흔들리고 마찰에 대한 민감도가 커질 수 있습니다. 침을 방치하지 않으면서도 과도하게 문질러 닦지 않는 균형이 중요합니다.', None),
+    ]),
+    ('기저귀', [
+        ('기저귀발진에는 어떤 크림을 써야 하나요?', '기저귀 부위는 습기, 마찰, 대소변 자극을 줄이고 피부 보호막을 유지하는 것이 핵심입니다. 기저귀를 자주 갈고 부드럽게 씻긴 뒤 완전히 말리고 필요한 정도의 보호막을 사용합니다.', None),
+        ('기저귀발진에 아연 성분이 꼭 필요한가요?', '아연은 보호·흡착 목적의 제형에 흔히 쓰이지만 모든 경우에 필요한 것은 아닙니다. 발진의 원인, 습한 정도, 마찰 정도, 감염 가능성에 따라 선택합니다.', None),
+        ('기저귀발진에는 연고와 크림 중 무엇이 낫나요?', '예방이나 경미한 홍반 단계와 마찰이 심한 단계는 필요한 보호막의 정도가 다릅니다. 넓게 두껍게 바르기보다 단계와 부위에 맞춰 제형을 고릅니다.', None),
+        ('기저귀발진이 칸디다인지 어떻게 구별하나요?', '주름 안쪽까지 침범하는 선명한 홍반과 주변의 작은 구진·농포(위성 병변)가 있으면 칸디다 가능성을 고려합니다. 이런 경우는 화장품 선택보다 진단과 항진균 치료 여부 판단이 먼저입니다.', None),
+        ('기저귀발진은 언제 진료가 필요한가요?', '며칠간 기본 관리에도 좋아지지 않거나 진물, 미란, 농포, 통증, 발열, 광범위한 악화가 동반되면 진료가 필요합니다.', None),
+    ]),
+    ('보습·장벽', [
+        ('아토피 피부에는 어떤 보습제가 좋나요?', '아토피 관리에서 보습은 기본 치료이지만 활동성 염증의 항염 치료를 대체하지 않습니다. 피부 전체에는 꾸준히 쓸 수 있는 보습제를, 건조가 심한 부위에는 보다 풍부한 장벽 제형을 선택할 수 있습니다. 보습제 선택과 함께 처방 치료 계획을 담당 의사와 정하세요.', None),
+        ('아토피 피부에 세라마이드 크림이 도움이 되나요?', '각질층 장벽 지질을 보완하는 보습 전략은 건조감과 장벽 관리 측면에서 합리적입니다. 다만 화장품이 활동성 습진의 항염 치료를 대체하지는 않습니다.', None),
+        ('세라마이드·콜레스테롤·지방산 3:1:1은 왜 쓰나요?', '각질층의 주요 장벽 지질인 세라마이드, 콜레스테롤, 지방산을 함께 고려해 피부장벽 지질 구조를 모사하려는 처방 컨셉입니다. 닥터더마퍼트는 이를 Derma311™이라는 공통 기술 언어로 사용합니다.', None),
+        ('스테로이드와 보습제는 어떤 순서로 바르나요?', '처방약은 병변에 정확히, 보습제는 필요한 피부에 충분히 바르는 것이 핵심입니다. 실제 순서와 간격은 처방된 약과 제형의 지시를 따릅니다.', None),
+        ('아토피 아기의 하루 보습 루틴은?', '짧고 미지근한 세정, 자극 최소화, 세정 후 빠른 보습, 반복되는 건조 부위의 선택적 보호가 기본입니다. 활동성 습진은 처방된 항염 치료를 함께 해야 합니다.', None),
+        ('장벽크림과 일반 수분크림의 차이는?', '수분감뿐 아니라 각질층 지질, 밀폐, 보호막 설계를 함께 고려한 제품을 장벽크림이라 부를 수 있습니다. 다만 ‘장벽’이라는 이름보다 실제 처방과 사용 상황이 중요합니다.', None),
+        ('오인트먼트는 언제 쓰나요?', '건조·갈라짐·마찰이 집중되는 작은 부위를 선택적으로 덮어 보호하는 용도에 적합합니다. 얼굴 전체에 무조건 두껍게 바르는 방식은 상황에 따라 오히려 불편할 수 있습니다.', None),
+        ('마찰 때문에 붉어진 아기 피부는?', '마찰원 제거, 부드러운 세정, 충분한 건조, 필요한 부위의 선택적 보호막이 기본입니다. 마스크, 옷, 턱받이, 기저귀 가장자리처럼 반복되는 마찰 원인을 찾아야 합니다.', None),
+    ]),
+    ('제품·루틴', [
+        ('민감한 아기 피부에는 제품을 몇 개나 써야 하나요?', '제품 수를 늘리기보다 단순한 루틴이 좋습니다. 새 제품은 한 번에 하나씩 추가해야 자극이 생겼을 때 원인을 추적하기 쉽습니다.', None),
+        ('아기 화장품은 패치 테스트를 해야 하나요?', '반응이 잦거나 매우 민감한 피부에서는 작은 부위에 먼저 써서 반응을 확인하는 방식이 유용합니다. 즉시 자극뿐 아니라 며칠간의 반응도 관찰합니다. 의료기관의 첩포검사를 대신하지는 않습니다.', None),
+        ('아기 피부에는 무향 제품이 더 좋은가요?', '향료는 필수 기능 성분이 아니므로, 민감한 유소아 피부에서는 불필요한 노출을 줄인다는 관점에서 무향 제품을 선호하는 것이 실용적입니다.', None),
+        ('아기 피부는 매일 클렌저를 써야 하나요?', '땀과 오염 정도에 맞춰 필요한 만큼만 세정합니다. 과도한 세정, 긴 접촉시간, 강한 계면활성제는 피부가 건조하고 예민하게 느껴지는 원인이 될 수 있습니다.', None),
+        ('Calming Water는 닦아내는 토너인가요?', '아닙니다. 세정 후 문지름을 추가하기보다 눌러 주거나 짧게 적셔 편안하게 관리하는 방식으로 사용합니다.', None),
+        ('Taurine Cream은 어떤 피부 상황에 맞나요?', '얼굴 전체에 가볍게 쓸 수 있는 데일리 장벽·보습 단계에 맞춘 제품입니다. 많이 건조한 국소 부위는 보다 풍부한 Barrier Cream이나 선택적인 오인트먼트가 적합할 수 있습니다.', None),
+        ('Barrier Cream은 언제 쓰나요?', '건조하고 거칠게 느껴지는 피부, 보다 풍부한 장벽 지질 보완이 필요한 상황에서 사용합니다. 닥터더마퍼트 3:1:1 장벽 지질 프레임워크를 대표하는 제품입니다.', None),
+        ('Calming Cream은 언제 쓰나요?', '침, 땀, 세정, 외부 자극 등으로 피부가 예민하고 불편하게 느껴지는 상황에서 사용한 뒤, 필요하면 Barrier 라인으로 이어가는 구조입니다.', None),
+    ]),
+    ('진료가 먼저', [
+        ('아기 발진에서 화장품보다 병원 진료가 먼저인 경우는?', '진물, 미란, 노란 가피, 농포, 통증, 발열, 급속 악화, 수면을 방해하는 심한 가려움은 진료가 우선입니다. 곰팡이·세균 감염, 활동성 습진 등을 구분해야 합니다.', None),
+        ('유소아 피부질환을 화장품만으로 관리해도 되나요?', '아닙니다. 화장품은 보습·장벽·보호 관리에 도움을 줄 수 있지만 아토피피부염, 감염성 피부질환 등 의학적 치료가 필요한 상태를 치료하는 의약품이 아닙니다.', None),
+    ]),
+]
+
+n = sum(len(q) for _, q in FAQ)
+prod_html = ''.join(
+    f'<article class="prod"><p class="en">{E(en)}</p><h3>{E(ko)}</h3><p>{E(role)}</p>'
+    + (f'<a class="link" href="{E(url)}" target="_blank" rel="noopener">공식몰에서 보기 ↗</a>' if url else '<p class="soon">판매처는 공식몰에서 확인해 주세요.</p>')
+    + '</article>' for en, ko, role, url in PRODUCTS)
+
+chips = ''.join(f'<a class="chip" href="#g{i}">{E(g)} <span>{len(qs)}</span></a>' for i, (g, qs) in enumerate(FAQ))
+k = 0
+faq_html = ''
+for i, (g, qs) in enumerate(FAQ):
+    faq_html += f'<h3 class="group" id="g{i}">{E(g)}</h3>'
+    for q, a, link in qs:
+        k += 1
+        faq_html += (f'<details><summary><span class="qn">{k:02d}</span>{E(q)}</summary><div class="ans"><p>{E(a)}</p>'
+                     + (f'<p class="connect"><b>닥터더마퍼트 연결</b> {E(link)}</p>' if link else '') + '</div></details>')
+
+ld = {"@context": "https://schema.org", "@type": "Organization", "name": "Dr. Dermapert 닥터더마퍼트",
+      "url": "https://www.dermapert.net/", "brand": "Dr. Dermapert"}
+
+page = f'''<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>닥터더마퍼트 | 유소아 피부장벽 지식 허브</title>
+<meta name="description" content="침독·기저귀·건조·마찰처럼 반복되는 아기 피부 상황별 관리 단계와 닥터더마퍼트 제품 역할, 부모들이 실제로 묻는 {n}가지 질문.">
+<meta property="og:title" content="닥터더마퍼트 | 유소아 피부장벽 지식 허브">
+<meta property="og:description" content="피부 타입보다 지금의 피부 상황을 봅니다. 상황별 관리 단계와 제품 역할 안내.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.dermapert.net/">
+<link rel="canonical" href="https://www.dermapert.net/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#1f3a4d">
+<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
+<style>
+:root{{--ink:#1c2a33;--mut:#5b6b75;--bg:#f7f5f1;--card:#fff;--line:#e4dfd6;--brand:#1f3a4d;--acc:#b8845a;--warn:#fff4e6;--warnb:#f0c89a}}
+*{{box-sizing:border-box}}html{{scroll-behavior:smooth}}
+body{{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;word-break:keep-all}}
+a{{color:inherit}}
+.wrap{{max-width:980px;margin:0 auto;padding:0 20px}}
+header.top{{position:sticky;top:0;z-index:5;background:rgba(247,245,241,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}}
+header.top .wrap{{display:flex;align-items:center;justify-content:space-between;height:60px}}
+.logo{{font-weight:800;letter-spacing:-.02em;text-decoration:none}}.logo small{{font-weight:500;color:var(--mut);margin-left:6px}}
+.buy{{background:var(--brand);color:#fff;text-decoration:none;border-radius:999px;padding:8px 16px;font-size:14px;font-weight:700;white-space:nowrap}}
+.hero{{padding:72px 0 40px}}
+.eyebrow{{font-size:12px;letter-spacing:.16em;color:var(--acc);font-weight:700}}
+.hero h1{{font-size:clamp(32px,6vw,54px);line-height:1.2;letter-spacing:-.03em;margin:14px 0 18px}}
+.hero p{{font-size:18px;color:var(--mut);max-width:640px;margin:0}}
+.cta{{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}}
+.btn{{display:inline-block;text-decoration:none;border-radius:12px;padding:13px 20px;font-weight:700;font-size:15px;border:1px solid var(--brand)}}
+.btn.pri{{background:var(--brand);color:#fff}}.btn.sec{{background:transparent;color:var(--brand)}}
+.warn{{background:var(--warn);border:1px solid var(--warnb);border-radius:14px;padding:16px 18px;font-size:15px;margin:8px 0 0}}
+section{{padding:48px 0}}
+h2{{font-size:28px;letter-spacing:-.02em;margin:0 0 8px}}
+.sub{{color:var(--mut);margin:0 0 24px}}
+.frame{{background:var(--brand);color:#fff;border-radius:20px;padding:28px}}
+.frame .ratio{{display:flex;gap:12px;margin:18px 0 6px;flex-wrap:wrap}}
+.frame .ratio div{{flex:1;min-width:120px;background:rgba(255,255,255,.08);border-radius:14px;padding:14px}}
+.frame .ratio b{{display:block;font-size:30px}}
+.frame p{{color:#d6e0e7;margin:8px 0 0}}
+.prods{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}}
+.prod{{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column}}
+.prod .en{{margin:0;font-size:12px;letter-spacing:.08em;color:var(--acc);font-weight:700;text-transform:uppercase}}
+.prod h3{{margin:4px 0 8px;font-size:17px}}.prod p{{margin:0 0 14px;font-size:14px;color:var(--mut);flex:1}}
+.prod .link{{font-weight:700;font-size:14px;color:var(--brand)}}.prod .soon{{flex:0;font-size:13px}}
+.chips{{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}}
+.chip{{text-decoration:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-size:14px}}.chip span{{color:var(--acc);font-weight:700}}
+.group{{margin:30px 0 10px;font-size:18px;scroll-margin-top:80px}}
+details{{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:8px 0}}
+summary{{cursor:pointer;list-style:none;padding:15px 18px;font-weight:650;display:flex;gap:12px}}summary::-webkit-details-marker{{display:none}}
+summary .qn{{color:var(--acc);font-variant-numeric:tabular-nums}}
+details[open] summary{{border-bottom:1px solid var(--line)}}
+.ans{{padding:4px 18px 14px}}.ans p{{margin:10px 0}}
+.connect{{background:#f3efe8;border-radius:10px;padding:10px 12px;font-size:14px}}.connect b{{color:var(--brand);margin-right:6px}}
+.buybox{{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px;text-align:center}}
+.buybox .cta{{justify-content:center}}
+footer{{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--mut);font-size:13px}}
+footer p{{margin:6px 0}}
+@media(max-width:760px){{.prods{{grid-template-columns:1fr}}.hero{{padding:48px 0 28px}}.logo small{{display:none}}h2{{font-size:24px}}}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="#">Dr. Dermapert<small>닥터더마퍼트</small></a><a class="buy" href="{E(SHOP + '?' + UTM)}" target="_blank" rel="noopener">공식몰 구매</a></div></header>
+<main>
+<div class="wrap hero">
+  <div class="eyebrow">PEDIATRIC SKIN BARRIER KNOWLEDGE HUB</div>
+  <h1>피부 타입보다<br>지금의 피부 상황을 봅니다.</h1>
+  <p>침·습기·마찰·건조·장벽 약화처럼 실제 생활에서 반복되는 피부 상황을 이해하고, 필요한 관리 단계와 제품 역할을 구분합니다.</p>
+  <div class="cta"><a class="btn pri" href="#faq">부모 질문 {n}가지 보기</a><a class="btn sec" href="#products">제품 역할 보기</a></div>
+  <p class="warn"><b>중요</b> · {E(REDFLAG)}</p>
+</div>
+
+<section id="derma311"><div class="wrap">
+  <div class="frame">
+    <div class="eyebrow">Derma311™ FRAMEWORK</div>
+    <h2 style="color:#fff">세라마이드 · 콜레스테롤 · 지방산 3:1:1</h2>
+    <div class="ratio"><div><b>3</b>세라마이드</div><div><b>1</b>콜레스테롤</div><div><b>1</b>지방산</div></div>
+    <p>각질층의 주요 장벽 지질을 함께 고려해 피부장벽 지질 구조를 모사하려는 처방 컨셉입니다. 닥터더마퍼트 제품의 공통 설계 언어입니다.</p>
+  </div>
+</div></section>
+
+<section id="products"><div class="wrap">
+  <h2>닥터더마퍼트 제품 역할</h2>
+  <p class="sub">피부 상황에 따라 단계와 제형을 나눕니다. 새 제품은 한 번에 하나씩 추가하세요.</p>
+  <div class="prods">{prod_html}</div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2>부모들이 실제로 묻는 {n}가지 질문</h2>
+  <p class="sub">질문을 눌러 답을 확인하세요.</p>
+  <div class="chips">{chips}</div>
+  {faq_html}
+</div></section>
+
+<section id="buy"><div class="wrap">
+  <div class="buybox">
+    <div class="eyebrow">OFFICIAL STORE</div>
+    <h2>닥터더마퍼트 정품 공식 구매</h2>
+    <p class="sub">닥터더마퍼트 제품은 공식몰 ‘닥터의아내’에서 구매할 수 있습니다. 가격·구성·재고는 공식몰에서 확인하세요.</p>
+    <div class="cta"><a class="btn pri" href="{E(SHOP + '?' + UTM)}" target="_blank" rel="noopener">닥터의아내 공식몰 바로가기 ↗</a><a class="btn sec" href="https://atoguide.com/" target="_blank" rel="noopener">아토피 자가관리 도구 atoguide ↗</a></div>
+  </div>
+</div></section>
+</main>
+<footer><div class="wrap">
+  <p><b>표현 원칙</b> · 닥터더마퍼트 제품은 화장품이며 질환을 예방·치료·완치한다고 표현하지 않습니다. 피부 상황에 맞는 보습·장벽·보호 제품 역할로 안내하며, 의학적 치료가 필요한 경우 진료를 우선합니다.</p>
+  <p>본 콘텐츠는 일반적 교육 목적이며 개별 진단·치료를 대신하지 않습니다.</p>
+  <p>브랜드: 주식회사 닥터더마퍼트 · 공식 판매: 주식회사 밀도(닥터의아내) · 대표 정혜원 · 사업자등록번호 143-87-01350 · 통신판매업 2022-제주대정-003 · 고객센터 070-8997-9687</p>
+  <p>Dr. Dermapert · Focus on Situation, Not Skin Type.</p>
+</div></footer>
+</body>
+</html>
+'''
+open('index.html', 'w', encoding='utf-8').write(page)
+print('ok', n, 'questions')
